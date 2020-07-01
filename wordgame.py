@@ -1,46 +1,49 @@
 # SIMPLE WORD GAME
 import time, os
-import keyboard
+from pynput import keyboard
 from random import randint
 import threading
 class game:
     def __init__(self, words):
         self.words = words
         self.wordlist = words.split(' ')
-        self.userword = "test"
+        self.userword = ""
         self.gamestrings = []
         self.maxlen = 0
         self.game = self.createGame()
         self.losed = 0
         self.points = 0
         self.route = 0
-        self.lock = threading.Lock()
-        self.keystatus = False
-        keyboard.hook(self.press)
-        #threading.Thread(target=self.graphics, args=()).start()
-        threading.Thread(target=self.testing).start()
-        keyboard.wait("esc")
-        keyboard.unhook(self.press)
-
-    def press(self, event):
-        if self.keystatus == False:
-            self.keystatus = True
-        else:
-            self.keystatus = False
+        listener = keyboard.Listener(
+        on_press=self.press,
+        on_release=self.on_release)
+        listener.start()
+        threading.Thread(target=self.graphics, args=()).start()
+        #threading.Thread(target=self.testing).start()
 
 
-        if event.name == "space":
-#            for string in self.gamestrings:
- #               if string.find(self.userword,len(string)-150-i,len(string)-i) != -1:
-  #                  self.points += 1
-   #                 self.wordlist.remove(self.userword)
-    #                self.gamestrings[counter].replace(word,len(word) * " ")
-            self.userword = ""
-        elif self.keystatus == True:
-            self.userword += event.name
-        #if len(event.name) == 2:
-        #if event.name[0] == event.name[1]:
-        
+    def on_release(self, key):
+        pass
+
+    def press(self, key):
+        try:
+            self.userword += key.char
+        except AttributeError:
+            if key == keyboard.Key.space:
+                word = self.userword
+                self.userword = ""
+                for string in self.gamestrings:
+                    i = self.route
+                    if string.find(word,len(string)-150-i, len(string)-i+len(word)-1) != -1:
+                        self.points += 1
+                        self.wordlist.remove(word)
+                        print(word)
+                        print(string)
+                        string.replace(word, len(word) * " ")            
+                        print(string)
+                    elif key == keyboard.Key.backspace:
+                        self.userword = self.userword[:len(self.userword) -1]
+
     def createGame(self):
         words = self.wordlist
         if len(words) < 20:
@@ -58,11 +61,11 @@ class game:
             build = []
             gamestrings = []
             for colum in range(columstart, columend, 1):
-                randnum = randint(40,90) # Zufälliger Abstand zwischen den wörtern 
+                randnum = randint(80,180) # Zufälliger Abstand zwischen den wörtern 
                 build.append(words[colum])
                 build.append(randnum)
             
-            randnum = randint(40,70) # Zufälliger Abstand zwischen den wörtern 
+            randnum = randint(50,80) # Zufälliger Abstand zwischen den wörtern 
             build.append(randnum)
             game.append(build)
         for colum in game:
@@ -101,11 +104,9 @@ class game:
 
     def graphics(self):
         print("Graphics started", self.maxlen)
-        time.sleep(1)
+        time.sleep(2)
         for i in range(self.maxlen):
-            if keyboard.is_pressed("esc"):
-                break
-            time.sleep(0.2)
+            time.sleep(2)
             self.route = i
             os.system("clear")
             for string in self.gamestrings:
@@ -115,13 +116,13 @@ class game:
                     if string.find(word,len(string)-i+len(word),len(string)) != -1:
                         self.losed += 1
                         self.wordlist.remove(word)
-            print("Missed Words: {}  Points: {}  Typing: {} Route: {}/{}".format(self.losed, self.points, self.userword,self.route, self.maxlen))
+            print("Missed Words: {}  Points: {}  Typing: {} Route: {}/{}  Words Left: {}".format(self.losed, self.points, self.userword,self.route, self.maxlen, len(self.wordlist)))
 
     def testing(self):
         print('Thread started')
-        time.sleep(0.1)
-        while not keyboard.is_pressed("esc"):
-            time.sleep(1)
+        time.sleep(0.12)
+        while True:
+            time.sleep(3)
             os.system("clear")
             print(self.userword)
 f = open('text.txt', "r+")
