@@ -32,15 +32,14 @@ class game:
             if key == keyboard.Key.space:
                 word = self.userword
                 self.userword = ""
+                counter = 0
                 for string in self.gamestrings:
+                    counter += 1
                     i = self.route
                     if string.find(word,len(string)-150-i, len(string)-i+len(word)-1) != -1:
                         self.points += 1
                         self.wordlist.remove(word)
-                        print(word)
-                        print(string)
-                        string.replace(word, len(word) * " ")            
-                        print(string)
+                        self.gamestrings[counter-1] = string.replace(word, len(word) * " ")            
                     elif key == keyboard.Key.backspace:
                         self.userword = self.userword[:len(self.userword) -1]
 
@@ -104,9 +103,8 @@ class game:
 
     def graphics(self):
         print("Graphics started", self.maxlen)
-        time.sleep(2)
         for i in range(self.maxlen):
-            time.sleep(2)
+            time.sleep(0.2)
             self.route = i
             os.system("clear")
             for string in self.gamestrings:
