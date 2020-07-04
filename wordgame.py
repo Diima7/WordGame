@@ -78,7 +78,7 @@ class game:
             build = []
             gamestrings = []
             for colum in range(columstart, columend, 1):
-                randnum = randint(80,180) # Zufälliger Abstand zwischen den wörtern 
+                randnum = randint(150,250) # Zufälliger Abstand zwischen den wörtern 
                 build.append(words[colum])
                 build.append(randnum)
             
@@ -131,7 +131,7 @@ class game:
                         self.losed += 1
                         self.wordlist.remove(word)
             print("Missed Words: {}  Points: {}  Typing: {} Route: {}/{}  Words Left: {}".format(self.losed, self.points, self.userword,self.route, self.maxlen, len(self.wordlist)))
-            time.sleep(0.08)
+            time.sleep(0.2)
         print("GAME END")
 
     
